@@ -5,7 +5,14 @@
  *
  *  data - вхідні дані.
  */
-function checkData(data) {
+function checkData(data) { 
+  if (Object.keys(data).length) { 
+    return data;
+  }
+  else {
+    let error = new Error("Об'єкт пустий");
+    return error.message;
+  }
   // Якщо об'єкт не пустий повертаємо дані
   // Інакше створюємо помилку,в якості тексту помилки ми використовуємо рядок "Об'єкт пустий".
   // Якщо виникла помилка, повертаємо її повідомлення.
@@ -26,6 +33,13 @@ console.log(checkData({ name: "John", age: 30, city: "New York" }));
  *  jsonStr - JSON-рядок для аналізу.
  */
 function parseJson(jsonStr) {
+  try {
+    let obj = JSON.parse(jsonStr);
+    return obj;
+  } 
+  catch (error) {
+    return error.message;
+  }
   // Спроба розпарсити JSON-рядок.
   // Якщо рядок має невірний формат, виникне помилка, яку ми обробляємо у блоку catch.
   // Повертаємо отриманий об'єкт
@@ -53,6 +67,16 @@ console.log(parseJson(invalidJson));
  *  age - вік користувача.
  */
 function getAge(age) {
+  try {
+    if (age < 0) {
+      let error = new Error("Вік не може бути менше 0!");
+      error.name = 'AgeError';
+      throw error;
+    }
+  } catch (err) {
+    return { error: err.message, name: err.name };
+  }
+  return `Вік користувача: ${age}`;
   // Спроба отримати вік користувача.
   // Якщо вік менше 0, виникне помилка, яку ми обробляємо у блоку catch.
   // Генеруємо помилку, якщо вік менше 0 з повідомленням Вік не може бути менше 0!.
@@ -78,7 +102,22 @@ console.log(getAge(20));
  *  books - масив книг.
  *  id - ID книги.
  */
-function getBookById(books, id) {
+function getBookById(books, id) { 
+  try {
+    let book;
+    for (const elem of books) {
+      if (elem.id === id) {
+        book = elem.title;
+      }
+    }
+    if (book === undefined) {
+      throw TypeError(`Книга з ID ${id} не знайдена!`)
+    }
+    return `Книга: ${book}`;
+  }
+  catch (err) {
+    return err.message;
+  }
   // Спроба знайти книгу по ID та записати в змінну book.
   // Якщо книга не знайдена, генерується TypeError з повідомленням Книга з ID ${id} не знайдена!.
   // Повертаємо book
@@ -119,6 +158,17 @@ console.log(
  *  encodedString - Рядок для декодування.
  */
 function decodeURIComponentWrapper(encodedString) {
+  try {
+    return decodeURIComponent(encodedString);
+  }
+  catch (err) {
+     if (err.name === "URIError") {
+       return `Помилка декодування URI`;
+     }
+     else {
+       return err.message;
+     }
+  }
   // Спроба декодувати рядок
   // Повертаємо декодований рядок
   // Якщо виникла помилка, і ії назва дорівнює URIError повертаємо помилку про неправильний URI формат з повідомленням Помилка декодування URI,
